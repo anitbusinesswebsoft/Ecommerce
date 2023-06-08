@@ -5,11 +5,21 @@ const userSchema = require("../../models/users/users")
 const router = express.Router()
 require("dotenv").config()
 
+const verifyToken = (token, secret) => {
+    try {
+        const decoded = jwt.verify(token, secret);
+        return decoded; // Returns the decoded token if it's valid
+    } catch (error) {
+        console.error('Invalid token:', error.message);
+        return null; // Token is invalid or expired
+    }
+};
+
 // Sign up with email and password
 router.post("/signup", async (req, res) => {
     try {
         const { displayName, email, password } = req.body
-        console.log(req.body);
+        console.log("-----------------------", req.body);
         const user = await userSchema.findOne({ email }).select('-password')
         if (user) {
             res.json({
@@ -38,8 +48,9 @@ router.post("/signin", async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await userSchema.findOne({ email })
+        console.log("signin ", req.body);
         if (!user) {
-            res.status(401).json({
+            res.json({
                 status: false,
                 msg: 'Invalid email or password'
             });
@@ -49,7 +60,7 @@ router.post("/signin", async (req, res) => {
         const result = await bcrypt.compare(password, user.password)
         if (!result) {
 
-            res.status(401).json({
+            res.json({
                 status: false,
                 msg: 'Invalid email or password'
             });
@@ -67,6 +78,23 @@ router.post("/signin", async (req, res) => {
 
     } catch (error) {
         res.status(500).send('Error logging in');
+    }
+})
+
+router.post("/verifytoken", async (req, res) => {
+    const data = verifyToken(req.body.token, process.env.JWT_SECRET_KEY)
+    if (data) {
+        res.json({
+            status: true,
+            data,
+            msg: 'User Verified'
+        })
+    } else {
+        res.json({
+            status: false,
+            data,
+            msg: 'User Not Verified'
+        })
     }
 })
 

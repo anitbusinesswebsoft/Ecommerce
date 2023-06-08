@@ -9,12 +9,14 @@ const Navbar = () => {
                 <Typography variant="h6" style={{ flexGrow: 1 }}>
                     My App
                 </Typography>
-                <Button color="inherit">
-                    <Link to="/signin" >SignIn</Link>
-                </Button>
-                <Button color="inherit">
-                    <Link color="inherit" to="/" >SignUp</Link>
-                </Button>
+
+                <Link to="/signin" >
+                    <Button> SignIn </Button>
+                </Link>
+
+                <Link  to="/">
+                    <Button> SignUp </Button>
+                </Link>
             </Toolbar>
         </AppBar>
     )

@@ -2,16 +2,25 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchApiData } from '../features/auth/apiSlice';
 
-const useDynamicApiFetch = (apiUrl, bodyOfRequest, method) => {
+const useDynamicFetchApi = (apiUrl, bodyOfRequest, method) => {
     const dispatch = useDispatch();
-    const { data, loading, error } = useSelector((state) => state.api);
-    console.log("1___________________", apiUrl, bodyOfRequest, method);
-    useEffect(() => {
-        console.log("2__________",apiUrl, bodyOfRequest, method);
-        dispatch(fetchApiData(apiUrl, bodyOfRequest, method));
-    }, [dispatch, apiUrl, bodyOfRequest, method]);
+    const { data, loading, error, msg } = useSelector((state) => state.api);
 
-    return { data, loading, error };
+    useEffect(() => {
+        if (!bodyOfRequest) {
+            return
+        }
+        dispatch(fetchApiData(
+            {
+                apiUrl: import.meta.env.VITE_API_URL + apiUrl,
+                bodyOfRequest,
+                method
+            }
+        ));
+
+    }, [apiUrl, bodyOfRequest, method]);
+
+    return { data, loading, error, msg };
 };
 
-export default useDynamicApiFetch;
+export default useDynamicFetchApi;
